@@ -110,9 +110,21 @@ class ConnectFour {
     let val = this.grid[row][col];
     let count: number = 0;
     let visited = new Set<string>();
+    let vdirs = [[1,0], [-1,0]];
+    let hdirs = [[0,1], [0,-1]];
 
-    let consecutives = this.getConsecutives(row, col, val,visited,count);
-    return consecutives >= ConnectFour.connectsToWin;
+    let consecutivesVertical = this.getConsecutives(row, col, val,visited,count, vdirs);
+
+    console.log('verticals', consecutivesVertical);
+    if (consecutivesVertical >= ConnectFour.connectsToWin) return true;
+
+    count = 0;
+    visited = new Set<string>();
+
+    let consecutivesHorizontal = this.getConsecutives(row, col, val,visited,count, hdirs);
+    console.log('horizontals', consecutivesHorizontal);
+
+    return consecutivesHorizontal >= ConnectFour.connectsToWin;
   }
 
   private getConsecutives(
@@ -120,19 +132,19 @@ class ConnectFour {
     col: number,
     val: string,
     visited: Set<string>,
-    count: number
+    count: number,
+    dirs: number[][]
   ) {
     if (row < 0 || col < 0 || row >= this.rows || col >= this.cols) return 0;
       if (this.grid[row][col] !== val) return 0;
       if (visited.has(`${row},${col}`)) return 0;
 
       visited.add(`${row},${col}`);
-      let dirs = [[0,1], [0,-1], [1,0], [-1,0]];
       
       for (let dir of dirs) {
         const newRow = row + dir[0];
         const newCol = col + dir[1];
-        count += this.getConsecutives(newRow, newCol, this.grid[row][col], visited, count);
+        count += this.getConsecutives(newRow, newCol, this.grid[row][col], visited, count, dirs);
       }
 
       return count + 1;
